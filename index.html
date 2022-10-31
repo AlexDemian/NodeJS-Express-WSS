@@ -1,34 +1,32 @@
 <!DOCTYPE html>
 <html>
-<body>
+  <body>
+    <input id="messageInput" />
+    <button id="sendButton">Send</button>
+    <div id="response"></div>
 
-<input id="messageInput">
-<button id="sendButton">Send</button>
-<div id="response"></div>    
+    <script>
+      const socket = new WebSocket(
+        "ws://localhost:3000?token=definitely_secure_token"
+      );
+      const responses = [];
 
-
-<script>
-    const socket = new WebSocket('ws://localhost:4000');
-    const responses = [];
- 
-    socket.addEventListener('open', (event) => {
-        console.log("WS connection is set up.")
+      socket.addEventListener("open", (event) => {
+        console.log("WS connection is set up.");
         const button = document.getElementById("sendButton");
         button.onclick = (event) => {
-            const input = document.getElementById("messageInput");
-            socket.send(input.value);
-            input.value = "";
-            input.focus();
-        }
-    });
+          const input = document.getElementById("messageInput");
+          socket.send(input.value);
+          input.value = "";
+          input.focus();
+        };
+      });
 
-    socket.addEventListener('message', (event) => {
+      socket.addEventListener("message", (event) => {
         responses.unshift(`${new Date().toISOString()}: ${event.data}`);
         const container = document.getElementById("response");
-        container.innerHTML = responses.join("<br>")
-    });
-
-</script>
-
-</body>
+        container.innerHTML = responses.join("<br>");
+      });
+    </script>
+  </body>
 </html>
