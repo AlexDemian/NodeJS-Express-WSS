@@ -6,27 +6,39 @@
     <div id="response"></div>
 
     <script>
-      const socket = new WebSocket(
-        "ws://localhost:3000?token=definitely_secure_token"
-      );
-      const responses = [];
+      connect();
 
-      socket.addEventListener("open", (event) => {
-        console.log("WS connection is set up.");
-        const button = document.getElementById("sendButton");
-        button.onclick = (event) => {
-          const input = document.getElementById("messageInput");
-          socket.send(input.value);
-          input.value = "";
-          input.focus();
+      function connect() {
+        const responses = [];
+        const socket = new WebSocket(
+          "ws://localhost:3000?token=definitely_secure_token"
+        );
+
+        socket.addEventListener("open", (event) => {
+          console.log("WS connection is set up.");
+          const button = document.getElementById("sendButton");
+          button.onclick = (event) => {
+            const input = document.getElementById("messageInput");
+            socket.send(input.value);
+            input.value = "";
+            input.focus();
+          };
+        });
+
+        socket.addEventListener("message", (event) => {
+          responses.unshift(`${new Date().toISOString()}: ${event.data}`);
+          const container = document.getElementById("response");
+          container.innerHTML = responses.join("<br>");
+        });
+
+        socket.onclose = function (event) {
+          console.log(
+            "Socket is closed. Reconnect will be attempted in 1 second.",
+            event.reason
+          );
+          setTimeout(connect, 1000);
         };
-      });
-
-      socket.addEventListener("message", (event) => {
-        responses.unshift(`${new Date().toISOString()}: ${event.data}`);
-        const container = document.getElementById("response");
-        container.innerHTML = responses.join("<br>");
-      });
+      }
     </script>
   </body>
 </html>
