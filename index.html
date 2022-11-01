@@ -3,15 +3,17 @@
   <body>
     <div>
       <h3>Text input</h3>
-      <input id="messageInput" />
+      <textarea id="messageInput"></textarea>
+      <br />
       <button id="sendTextButton">Send</button>
 
-      <h3>File input</h3>
-      <input type="file" id="fileInput" />
-      <button id="sendFileButton">Send</button>
+      <h3>Image input</h3>
       <br />
+      <input type="file" id="fileInput" />
       <br />
       <i>Max-size: 150MB</i>
+      <br />
+      <br />
     </div>
 
     <hr />
@@ -41,18 +43,28 @@
             input.focus();
           };
 
-          button = document.getElementById("sendFileButton");
-          button.onclick = (event) => {
-            const input = document.getElementById("fileInput");
-            socket.send(input.files[0]);
-            input.value = "";
+          const fileInput = document.getElementById("fileInput");
+          fileInput.onchange = (event) => {
+            socket.send(event.target.files[0]);
+            event.target.value = null;
           };
         });
 
         socket.addEventListener("message", (event) => {
-          responses.unshift(`${new Date().toISOString()}: ${event.data}`);
-          const container = document.getElementById("response");
-          container.innerHTML = responses.join("<br>");
+          const { data } = event;
+
+          let newEl;
+
+          if (data instanceof Blob) {
+            newEl = document.createElement("img");
+            newEl.src = URL.createObjectURL(data);
+          } else {
+            newEl = document.createElement("pre");
+            newEl.innerHTML = data;
+          }
+
+          const logEl = document.getElementById("response");
+          logEl.insertBefore(newEl, logEl.firstChild);
         });
 
         socket.onclose = function (event) {

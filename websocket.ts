@@ -41,7 +41,7 @@ wss.on("connection", function connection(ws, req: WsRequest) {
 });
 
 const wsTextCallbacks: WsMesssageCallback[] = [
-  (ws, { user }, data) => ws.send(`received message from ${user.name}: ${data}`),
+  (ws, { user }, data) => wsSendAll(`${user.name}: \r ${data}`),
   (ws, { user }, data) => console.log(user, data.toString()),
 ];
 
@@ -51,7 +51,12 @@ const fileUpload: WsMesssageCallback = async (ws, { user }, data) => {
   const fname = uuid() + `.${ext}`;
 
   fs.writeFileSync(path.join("uploads", fname), buffer);
-  ws.send(`user ${user.name} shared file: ${fname}`);
+  const message = `User ${user.name} shared file: ${fname}`;
+  wsSendAll(message);
+  wsSendAll(buffer);
 };
+
+const wsSendAll = (message: string | Buffer | ArrayBuffer) =>
+  wss.clients.forEach((client) => client.send(message));
 
 const wsBinaryCallbacks: WsMesssageCallback[] = [fileUpload];
