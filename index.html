@@ -1,9 +1,25 @@
 <!DOCTYPE html>
 <html>
   <body>
-    <input id="messageInput" />
-    <button id="sendButton">Send</button>
-    <div id="response"></div>
+    <div>
+      <h3>Text input</h3>
+      <input id="messageInput" />
+      <button id="sendTextButton">Send</button>
+
+      <h3>File input</h3>
+      <input type="file" id="fileInput" />
+      <button id="sendFileButton">Send</button>
+      <br />
+      <br />
+      <i>Max-size: 150MB</i>
+    </div>
+
+    <hr />
+
+    <div style="margin-top: 25px">
+      <h3>Server response</h3>
+      <div id="response"></div>
+    </div>
 
     <script>
       connect();
@@ -16,12 +32,20 @@
 
         socket.addEventListener("open", (event) => {
           console.log("WS connection is set up.");
-          const button = document.getElementById("sendButton");
+
+          let button = document.getElementById("sendTextButton");
           button.onclick = (event) => {
             const input = document.getElementById("messageInput");
             socket.send(input.value);
             input.value = "";
             input.focus();
+          };
+
+          button = document.getElementById("sendFileButton");
+          button.onclick = (event) => {
+            const input = document.getElementById("fileInput");
+            socket.send(input.files[0]);
+            input.value = "";
           };
         });
 
