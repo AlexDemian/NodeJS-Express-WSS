@@ -4,7 +4,7 @@
 
 WSS-on-NodeJS playground. <br>
 Simple one-channel chat app based on websockets server running on NodeJS. <br>
-Alows to publish text and images to the channel. <br>
+Allows to publish text and images to the channel. <br>
 
 ### Infrastructure
 
