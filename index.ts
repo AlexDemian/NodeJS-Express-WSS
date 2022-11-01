@@ -14,9 +14,9 @@ app.get("/", (req, res) => {
 const server = http.createServer(app).listen(HTTP_PORT);
 
 server.on("upgrade", function upgrade(request, socket, head) {
-  const authenticated = authenticateHttp(request);
+  const user = authenticateHttp(request);
 
-  if (!authenticated) {
+  if (!user) {
     socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
     socket.destroy();
     return;

@@ -1,15 +1,21 @@
-import http from "http";
+import { IncomingMessage } from "http";
 import url from "url";
 
 import { HOST, HTTP_PORT } from "./constants";
+import { User } from "./types";
 
-export const authenticateHttp = (request: http.IncomingMessage) => {
+const defaultUser: User = { name: "John Doe" };
+
+export const authenticateHttp = (request: IncomingMessage) => {
   // Just a dummy method for demonstration.
-  return request.headers["origin"] == `http://${HOST}:${HTTP_PORT}`;
+  if (request.headers["origin"] == `http://${HOST}:${HTTP_PORT}`)
+    return defaultUser;
 };
 
-export const authenticateWs = (request: http.IncomingMessage) => {
+export const authenticateWs = (request: IncomingMessage): User | undefined => {
   // Just a dummy method for demonstration.
   const { url: requestUrl = "" } = request;
-  return url.parse(requestUrl, true).query.token == "definitely_secure_token";
+  const verified =
+    url.parse(requestUrl, true).query.token == "definitely_secure_token";
+  if (verified) return defaultUser;
 };
